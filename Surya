@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Node structure for the priority queue
+struct Node {
+    int data;
+    int priority;
+    struct Node* next;
+};
+
+// Function to create a new node
+struct Node* newNode(int data, int priority) {
+    struct Node* temp = (struct Node*)malloc(sizeof(struct Node));
+    temp->data = data;
+    temp->priority = priority;
+    temp->next = NULL;
+    return temp;
+}
+
+// Function to peek at the top item in the queue
+int peek(struct Node** head) {
+    return (*head)->data;
+}
+
+// Function to remove the item with the highest priority from the queue
+void dequeue(struct Node** head) {
+    struct Node* temp = *head;
+    (*head) = (*head)->next;
+    free(temp);
+}
+
+// Function to add an element to the queue based on priority
+void enqueue(struct Node** head, int data, int priority) {
+    struct Node* start = *head;
+    struct Node* temp = newNode(data, priority);
+
+    // If the head has lower priority, insert new node before head
+    if ((*head)->priority < priority) {
+        temp->next = *head;
+        *head = temp;
+    } else {
+        // Traverse to find the correct position for insertion
+        while (start->next != NULL && start->next->priority >= priority) {
+            start = start->next;
+        }
+        temp->next = start->next;
+        start->next = temp;
+    }
+}
+
+// Function to check if the queue is empty
+int isEmpty(struct Node** head) {
+    return (*head) == NULL;
+}
+
+// Main function to demonstrate the priority queue
+int main() {
+    // Create an empty priority queue
+    struct Node* pq = newNode(4, 1);
+    enqueue(&pq, 5, 2);
+    enqueue(&pq, 6, 3);
+    enqueue(&pq, 7, 0);
+
+    // Displaying the elements in the queue
+    printf("Priority Queue:\n");
+    while (!isEmpty(&pq)) {
+        printf("Data: %d | Priority: %d\n", peek(&pq), pq->priority);
+        dequeue(&pq);
+    }
+
+    return 0;
+}
